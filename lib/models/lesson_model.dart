@@ -5,6 +5,7 @@ class Lesson {
   String title;
   String body;
   String image;
+  String date;
 
   Lesson(
       {this.location,
@@ -12,7 +13,8 @@ class Lesson {
       this.teachers,
       this.title,
       this.body,
-      this.image});
+      this.image,
+      this.date});
 }
 
 final Lesson periodOfRecess = Lesson(
@@ -20,6 +22,7 @@ final Lesson periodOfRecess = Lesson(
     receiver: "",
     teachers: "From the Desk of Chris Maurus",
     title: "A Period of Recess",
+    date: "2020-10-04T00:00:00Z",
     image:
         "https://correctingtime.org/drive/transcript/en/557/Period_of_Recess.jpg",
     body:
