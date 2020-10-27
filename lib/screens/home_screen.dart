@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     // child: Image.asset('images/Period_of_Recess.jpg'),
                                     child: Image.network(
                                       lesson['image'],
-                                      width: 200,
+                                      width: 80,
                                     ),
                                   ),
                                   SizedBox(
