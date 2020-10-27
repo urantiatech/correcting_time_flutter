@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 class LessonScreen extends StatelessWidget {
-  final htmlData = """<h1>Hello</h1>""";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
