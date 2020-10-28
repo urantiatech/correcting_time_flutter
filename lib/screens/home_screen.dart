@@ -1,6 +1,7 @@
 import 'package:correcting_time/models/lesson_model.dart';
 import 'package:correcting_time/screens/lesson_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import "package:graphql_flutter/graphql_flutter.dart";
 
 class HomeScreen extends StatefulWidget {
@@ -14,6 +15,9 @@ class _HomeScreenState extends State<HomeScreen> {
     index(lang:"en", sortby: "id") {
       total,
       transcripts {
+        header {
+          slug
+        },
         title,
         teachers,
         date,
@@ -66,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemCount: lessons.length,
                           itemBuilder: (context, index) {
                             final lesson = lessons[index];
-                            // print("-----Image:" + lesson['image']);
+                            print(lesson['header']['slug']);
 
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -87,23 +91,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   SizedBox(
-                                    width: 6,
+                                    width: 14,
                                   ),
                                   Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.40,
+                                        // width:
+                                        //     MediaQuery.of(context).size.width *
+                                        //         0.40,
                                         child: Text(
                                           lesson['title'],
                                           style: TextStyle(
                                             color:
                                                 Theme.of(context).accentColor,
                                             fontWeight: FontWeight.w600,
-                                            fontSize: 18,
+                                            fontSize: 22,
                                           ),
                                         ),
                                       ),
@@ -113,16 +117,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       Container(
                                         // color: Colors.red,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.40,
+                                        // width:
+                                        //     MediaQuery.of(context).size.width *
+                                        //         0.40,
                                         child: Text(
                                           lesson['teachers'][0],
                                           style: TextStyle(
                                             color:
                                                 Theme.of(context).accentColor,
                                             fontWeight: FontWeight.w600,
-                                            fontSize: 14,
+                                            fontSize: 16,
                                           ),
                                         ),
                                       ),
@@ -132,16 +136,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       Container(
                                         // color: Colors.red,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.40,
+                                        // width:
+                                        //     MediaQuery.of(context).size.width *
+                                        //         0.40,
                                         child: Text(
                                           lesson['date'],
                                           style: TextStyle(
                                             color:
                                                 Theme.of(context).accentColor,
                                             fontWeight: FontWeight.w600,
-                                            fontSize: 12,
+                                            fontSize: 14,
                                           ),
                                         ),
                                       ),
