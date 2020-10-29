@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.all(8),
           child: Column(
             children: [
               Expanded(
@@ -70,90 +70,104 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemCount: lessons.length,
                           itemBuilder: (context, index) {
                             final lesson = lessons[index];
-                            print(lesson['header']['slug']);
+                            // print(lesson['header']['slug']);
 
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                        width: 5,
-                                        color: Theme.of(context).primaryColor,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LessonScreen(
+                                        slug: lesson['header']['slug'],
+                                        lessonTitle: lesson['title'],
                                       ),
                                     ),
-                                    // child: Image.asset('images/Period_of_Recess.jpg'),
-                                    child: Image.network(
-                                      lesson['image'],
-                                      width: 80,
+                                  );
+                                },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          width: 5,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      // child: Image.asset('images/Period_of_Recess.jpg'),
+                                      child: Image.network(
+                                        lesson['image'],
+                                        width: 80,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 14,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        // width:
-                                        //     MediaQuery.of(context).size.width *
-                                        //         0.40,
-                                        child: Text(
-                                          lesson['title'],
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 22,
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.70,
+                                          child: Text(
+                                            lesson['title'],
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(context).accentColor,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 22,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      // Text(lesson['title']),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Container(
-                                        // color: Colors.red,
-                                        // width:
-                                        //     MediaQuery.of(context).size.width *
-                                        //         0.40,
-                                        child: Text(
-                                          lesson['teachers'][0],
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16,
+                                        // Text(lesson['title']),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.70,
+                                          child: Text(
+                                            lesson['teachers'][0],
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(context).accentColor,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      // Text(lesson['teachers'][0]),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Container(
-                                        // color: Colors.red,
-                                        // width:
-                                        //     MediaQuery.of(context).size.width *
-                                        //         0.40,
-                                        child: Text(
-                                          lesson['date'],
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14,
+                                        // Text(lesson['teachers'][0]),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.70,
+                                          child: Text(
+                                            lesson['date'],
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(context).accentColor,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      // Text(lesson['date']),
-                                      // Text("\n"),
-                                    ],
-                                  ),
-                                ],
+                                        // Text(lesson['date']),
+                                        // Text("\n"),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           });
@@ -168,3 +182,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+//
+// GestureDetector(
+// onTap: () {
+// Navigator.push(
+// context,
+// MaterialPageRoute(
+// builder: (context) => LessonScreen(
+// slug: lesson['header']['slug'],
+// ),
+// ),
+// );
+// },
+// child: Text('lesson'),
+// ),

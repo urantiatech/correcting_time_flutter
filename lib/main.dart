@@ -26,16 +26,16 @@ class MyApp extends StatelessWidget {
       ),
     );
 
-    return MaterialApp(
-      title: 'Correcting Time',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Color(0xFFD1AF67),
-        accentColor: Color(0xFFa2825c),
-      ),
-      home: GraphQLProvider(
-        child: HomeScreen(),
-        client: client,
+    return GraphQLProvider(
+      client: client,
+      child: MaterialApp(
+        title: 'Correcting Time',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: Color(0xFFD1AF67),
+          accentColor: Color(0xFFa2825c),
+        ),
+        home: HomeScreen(),
       ),
     );
   }
