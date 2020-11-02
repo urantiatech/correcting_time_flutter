@@ -2,6 +2,7 @@ import 'package:correcting_time/screens/lesson_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import "package:graphql_flutter/graphql_flutter.dart";
+import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -9,10 +10,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool showNextButton = true;
   int skipNumber = 0;
   int displayNumberStart = 0;
   int displayNumberEnd = 0;
-  int totalLessons;
+  int totalLessons = 500;
   String readLessons = """
   query getPage(\$skip: Int!){
     index(lang:"en", sortby: "id", skip:\$skip) {
@@ -33,13 +35,22 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     displayNumberStart = skipNumber + 1;
     displayNumberEnd = skipNumber + 10;
+    showNextButton = !(displayNumberEnd >= (totalLessons));
+
     return Scaffold(
       appBar: AppBar(
         title: Text('11:11 - Correcting Time'),
         actions: [
           IconButton(
             icon: Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchScreen(),
+                ),
+              );
+            },
           )
         ],
       ),
@@ -90,6 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       List lessons = result.data['index']['transcripts'];
                       totalLessons = result.data['index']['total'];
                       // print(totalLessons);
+                      if (displayNumberEnd > totalLessons) {
+                        displayNumberEnd = totalLessons;
+                      }
 
                       return Column(
                         children: [
@@ -273,13 +287,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   RaisedButton(
                     child: Text('Next'),
-                    onPressed: () {
-                      setState(
-                        () {
-                          skipNumber += 10;
-                        },
-                      );
-                    },
+                    // onPressed: () {
+                    //   setState(() {
+                    //     skipNumber += 10;
+                    //   });
+                    // }
+                    onPressed: showNextButton
+                        ? () {
+                            setState(
+                              () {
+                                skipNumber += 10;
+                              },
+                            );
+                          }
+                        : null,
                   ),
                 ],
               ),
