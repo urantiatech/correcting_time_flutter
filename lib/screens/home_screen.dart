@@ -37,6 +37,24 @@ class _HomeScreenState extends State<HomeScreen> {
     displayNumberEnd = skipNumber + 10;
     showNextButton = !(displayNumberEnd >= (totalLessons));
 
+    final kTextStyle14 = TextStyle(
+      color: Theme.of(context).accentColor,
+      fontWeight: FontWeight.w600,
+      fontSize: 14,
+    );
+
+    final kTextStyle16 = TextStyle(
+      color: Theme.of(context).accentColor,
+      fontWeight: FontWeight.w600,
+      fontSize: 16,
+    );
+
+    final kTextStyle22 = TextStyle(
+      color: Theme.of(context).accentColor,
+      fontWeight: FontWeight.w600,
+      fontSize: 22,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text('11:11 - Correcting Time'),
@@ -61,32 +79,17 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Container(
                 alignment: Alignment.center,
-                // margin: EdgeInsets.all(5),
-                // child: Text(
-                //   'Displaying $displayNumberStart-$displayNumberEnd of $totalLessons',
-                //   style: TextStyle(
-                //     color: Theme.of(context).accentColor,
-                //     fontWeight: FontWeight.w600,
-                //     fontSize: 16,
-                //   ),
-                // ),
               ),
               Expanded(
                 child: Container(
-                  // color: Colors.red[100],
-                  // width: 400,
-                  // height: 350,
                   child: Query(
                     options: QueryOptions(
-                      documentNode: gql(
-                          readLessons), // this is the query string you just created
+                      documentNode: gql(readLessons),
                       variables: {
-                        'skip': skipNumber,
+                        'skip': skipNumber, // used to be nRepositories
                       },
-                      // pollInterval: 60,
+                      // pollInterval: 60, // not required for CT app, this is refresh interval in seconds
                     ),
-                    // Just like in apollo refetch() could be used to manually trigger a refetch
-                    // while fetchMore() can be used for pagination purpose
                     builder: (QueryResult result,
                         {VoidCallback refetch, FetchMore fetchMore}) {
                       if (result.hasException) {
@@ -111,11 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             padding: const EdgeInsets.all(4.0),
                             child: Text(
                               'Displaying $displayNumberStart-$displayNumberEnd of $totalLessons',
-                              style: TextStyle(
-                                color: Theme.of(context).accentColor,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
+                              style: kTextStyle16,
                             ),
                           ),
                           Expanded(
@@ -173,12 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     0.70,
                                                 child: Text(
                                                   lesson['title'],
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .accentColor,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 22,
-                                                  ),
+                                                  style: kTextStyle22,
                                                 ),
                                               ),
                                               // Text(lesson['title']),
@@ -192,12 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     0.70,
                                                 child: Text(
                                                   lesson['teachers'][0],
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .accentColor,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 16,
-                                                  ),
+                                                  style: kTextStyle16,
                                                 ),
                                               ),
                                               // Text(lesson['teachers'][0]),
@@ -211,16 +200,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     0.70,
                                                 child: Text(
                                                   lesson['date'],
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .accentColor,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 14,
-                                                  ),
+                                                  style: kTextStyle14,
                                                 ),
                                               ),
-                                              // Text(lesson['date']),
-                                              // Text("\n"),
                                             ],
                                           ),
                                         ],
@@ -231,36 +213,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.center,
-                          //   children: [
-                          //     RaisedButton(
-                          //       child: Text('Previous'),
-                          //       onPressed: skipNumber == 0
-                          //           ? null
-                          //           : () {
-                          //               setState(
-                          //                 () {
-                          //                   skipNumber -= 10;
-                          //                 },
-                          //               );
-                          //             },
-                          //     ),
-                          //     SizedBox(
-                          //       width: 10,
-                          //     ),
-                          //     RaisedButton(
-                          //       child: Text('Next'),
-                          //       onPressed: () {
-                          //         setState(
-                          //           () {
-                          //             skipNumber += 10;
-                          //           },
-                          //         );
-                          //       },
-                          //     ),
-                          //   ],
-                          // ),
                         ],
                       );
                     },
@@ -311,18 +263,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-//
-// GestureDetector(
-// onTap: () {
-// Navigator.push(
-// context,
-// MaterialPageRoute(
-// builder: (context) => LessonScreen(
-// slug: lesson['header']['slug'],
-// ),
-// ),
-// );
-// },
-// child: Text('lesson'),
-// ),
