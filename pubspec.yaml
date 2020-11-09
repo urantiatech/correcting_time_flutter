@@ -21,6 +21,9 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  hive: ^1.4.4+1
+  hive_flutter: ^0.3.1
+  path_provider: ^1.6.24
   graphql_flutter: ^3.0.0
   flutter_html: ^1.0.2
   flutter:

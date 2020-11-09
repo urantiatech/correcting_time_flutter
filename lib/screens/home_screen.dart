@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:correcting_time/screens/lesson_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import "package:graphql_flutter/graphql_flutter.dart";
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Box likedLessonsBox;
   bool showNextButton = true;
   int skipNumber = 0;
   int displayNumberStart = 0;
@@ -31,6 +36,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
   """;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    likedLessonsBox = Hive.box("likedLessons");
+  }
+
   @override
   Widget build(BuildContext context) {
     displayNumberStart = skipNumber + 1;
@@ -123,7 +135,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 itemCount: lessons.length,
                                 itemBuilder: (context, index) {
                                   final lesson = lessons[index];
-                                  // print(lesson['header']['slug']);
+                                  bool isLiked;
+                                  if (likedLessonsBox
+                                          .get(lesson['header']['slug']) ==
+                                      true) {
+                                    isLiked = true;
+                                  } else {
+                                    isLiked = false;
+                                  }
 
                                   return Padding(
                                     padding:
@@ -141,70 +160,107 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                       },
                                       child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              border: Border.all(
-                                                width: 5,
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                              ),
-                                            ),
-                                            // child: Image.asset('images/Period_of_Recess.jpg'),
-                                            child: Image.network(
-                                              lesson['image'],
-                                              width: 80,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 8,
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                          Row(
                                             children: [
                                               Container(
                                                 width: MediaQuery.of(context)
                                                         .size
                                                         .width *
-                                                    0.70,
-                                                child: Text(
-                                                  lesson['title'],
-                                                  style: kTextStyle22,
+                                                    0.20,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                  border: Border.all(
+                                                    width: 5,
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
+                                                  ),
+                                                ),
+                                                // child: Image.asset('images/Period_of_Recess.jpg'),
+                                                child: Image.network(
+                                                  lesson['image'],
                                                 ),
                                               ),
-                                              // Text(lesson['title']),
                                               SizedBox(
-                                                height: 8,
+                                                width: 8,
                                               ),
-                                              Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.70,
-                                                child: Text(
-                                                  lesson['teachers'][0],
-                                                  style: kTextStyle16,
-                                                ),
-                                              ),
-                                              // Text(lesson['teachers'][0]),
-                                              SizedBox(
-                                                height: 8,
-                                              ),
-                                              Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.70,
-                                                child: Text(
-                                                  lesson['date'],
-                                                  style: kTextStyle14,
-                                                ),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.60,
+                                                    child: Text(
+                                                      lesson['title'],
+                                                      style: kTextStyle22,
+                                                    ),
+                                                  ),
+                                                  // Text(lesson['title']),
+                                                  SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.60,
+                                                    child: Text(
+                                                      lesson['teachers'][0],
+                                                      style: kTextStyle16,
+                                                    ),
+                                                  ),
+                                                  // Text(lesson['teachers'][0]),
+                                                  SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.60,
+                                                    child: Text(
+                                                      lesson['date'],
+                                                      style: kTextStyle14,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
+                                          IconButton(
+                                            icon: isLiked
+                                                ? Icon(Icons.favorite)
+                                                : Icon(Icons.favorite_border),
+                                            iconSize: 30.0,
+                                            color: isLiked
+                                                ? Colors.red[400]
+                                                : Colors.blueGrey,
+                                            onPressed: () {
+                                              setState(
+                                                () {
+                                                  likedLessonsBox.put(
+                                                      lesson['header']['slug'],
+                                                      !isLiked);
+                                                },
+                                              );
+                                              print(isLiked);
+                                            },
+                                          ),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.01,
+                                          )
                                         ],
                                       ),
                                     ),
