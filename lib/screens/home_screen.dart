@@ -49,6 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
     displayNumberEnd = skipNumber + 10;
     showNextButton = !(displayNumberEnd >= (totalLessons));
 
+    var paddingAllSide = 8.0;
+
     final kTextStyle14 = TextStyle(
       color: Theme.of(context).accentColor,
       fontWeight: FontWeight.w600,
@@ -86,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: EdgeInsets.all(paddingAllSide),
           child: Column(
             children: [
               Container(
@@ -136,19 +138,40 @@ class _HomeScreenState extends State<HomeScreen> {
                                 itemBuilder: (context, index) {
                                   final lesson = lessons[index];
                                   bool isLiked;
-                                  if (likedLessonsBox
-                                          .get(lesson['header']['slug']) ==
+                                  bool isRead;
+                                  if (likedLessonsBox.get(lesson['header']
+                                              ['slug'] +
+                                          "isLiked") ==
                                       true) {
                                     isLiked = true;
                                   } else {
                                     isLiked = false;
                                   }
+                                  if (likedLessonsBox.get(lesson['header']
+                                              ['slug'] +
+                                          "isRead") ==
+                                      true) {
+                                    isRead = true;
+                                  } else {
+                                    isRead = false;
+                                  }
+                                  var fullWidth =
+                                      MediaQuery.of(context).size.width -
+                                          paddingAllSide * 2;
 
                                   return Padding(
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 8),
                                     child: GestureDetector(
                                       onTap: () {
+                                        setState(
+                                          () {
+                                            likedLessonsBox.put(
+                                                lesson['header']['slug'] +
+                                                    "isRead",
+                                                true);
+                                          },
+                                        );
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -166,10 +189,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Row(
                                             children: [
                                               Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.20,
+                                                width: fullWidth * 0.18,
+                                                height: fullWidth * 0.18,
                                                 decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(6),
@@ -179,54 +200,39 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         .primaryColor,
                                                   ),
                                                 ),
-                                                // child: Image.asset('images/Period_of_Recess.jpg'),
                                                 child: Image.network(
                                                   lesson['image'],
                                                 ),
                                               ),
                                               SizedBox(
-                                                width: 8,
+                                                width: fullWidth * 0.02,
                                               ),
                                               Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.60,
+                                                    width: fullWidth * 0.60,
                                                     child: Text(
                                                       lesson['title'],
                                                       style: kTextStyle22,
                                                     ),
                                                   ),
-                                                  // Text(lesson['title']),
                                                   SizedBox(
                                                     height: 8,
                                                   ),
                                                   Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.60,
+                                                    width: fullWidth * 0.60,
                                                     child: Text(
                                                       lesson['teachers'][0],
                                                       style: kTextStyle16,
                                                     ),
                                                   ),
-                                                  // Text(lesson['teachers'][0]),
                                                   SizedBox(
                                                     height: 8,
                                                   ),
                                                   Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.60,
+                                                    width: fullWidth * 0.60,
                                                     child: Text(
                                                       lesson['date'],
                                                       style: kTextStyle14,
@@ -236,31 +242,59 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                             ],
                                           ),
-                                          IconButton(
-                                            icon: isLiked
-                                                ? Icon(Icons.favorite)
-                                                : Icon(Icons.favorite_border),
-                                            iconSize: 30.0,
-                                            color: isLiked
-                                                ? Colors.red[400]
-                                                : Colors.blueGrey,
-                                            onPressed: () {
-                                              setState(
-                                                () {
-                                                  likedLessonsBox.put(
-                                                      lesson['header']['slug'],
-                                                      !isLiked);
-                                                },
-                                              );
-                                              print(isLiked);
-                                            },
+                                          Column(
+                                            children: [
+                                              Container(
+                                                width: fullWidth * 0.12,
+                                                child: IconButton(
+                                                  icon: isLiked
+                                                      ? Icon(Icons.favorite)
+                                                      : Icon(Icons
+                                                          .favorite_border),
+                                                  iconSize: 30.0,
+                                                  color: isLiked
+                                                      ? Colors.red[400]
+                                                      : Colors.blueGrey,
+                                                  onPressed: () {
+                                                    setState(
+                                                      () {
+                                                        likedLessonsBox.put(
+                                                            lesson['header']
+                                                                    ['slug'] +
+                                                                "isLiked",
+                                                            !isLiked);
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                              Container(
+                                                width: fullWidth * 0.12,
+                                                child: IconButton(
+                                                  icon: isRead
+                                                      ? Icon(Icons
+                                                          .radio_button_checked)
+                                                      : Icon(Icons
+                                                          .radio_button_unchecked),
+                                                  iconSize: 30.0,
+                                                  color: isRead
+                                                      ? Colors.blueGrey[300]
+                                                      : Colors.blueGrey,
+                                                  onPressed: () {
+                                                    setState(
+                                                      () {
+                                                        likedLessonsBox.put(
+                                                            lesson['header']
+                                                                    ['slug'] +
+                                                                "isRead",
+                                                            !isRead);
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.01,
-                                          )
                                         ],
                                       ),
                                     ),
@@ -295,11 +329,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   RaisedButton(
                     child: Text('Next'),
-                    // onPressed: () {
-                    //   setState(() {
-                    //     skipNumber += 10;
-                    //   });
-                    // }
                     onPressed: showNextButton
                         ? () {
                             setState(
