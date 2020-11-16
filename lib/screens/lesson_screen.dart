@@ -57,7 +57,7 @@ class LessonScreen extends StatelessWidget {
 
                       // it can be either Map or List
                       Map lesson = result.data['transcript'];
-                      print(lesson);
+                      // print(lesson);
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),

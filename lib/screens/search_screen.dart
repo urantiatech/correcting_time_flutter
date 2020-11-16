@@ -119,7 +119,7 @@ class QuerySearchWidget extends StatelessWidget {
 
   final String searchLessons;
   final searchText;
-  int skipNumber;
+  final int skipNumber;
 
   @override
   Widget build(BuildContext context) {
