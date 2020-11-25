@@ -1,12 +1,13 @@
 import 'dart:convert';
 
-import 'package:correcting_time/listOfLessons.dart';
+import 'package:correcting_time/widgets/lessonRow.dart';
 import 'package:correcting_time/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 import "package:graphql_flutter/graphql_flutter.dart";
 import 'package:hive/hive.dart';
-import '../queriesGQL.dart';
+import '../models/queriesGQL.dart';
 import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,53 +18,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Box likedLessonsBox;
   Box allLessonsBox;
-  int skipNumber = 0;
-  int totalLessons = 500;
+  int totalLessons;
   int totalLessonsOnServer;
-  var fetchTotalNumberWidget;
 
   @override
   void initState() {
     super.initState();
     likedLessonsBox = Hive.box("likedLessons");
     allLessonsBox = Hive.box("allLessons");
-    // fetchTotalNumberWidget = Query(
-    //   options: QueryOptions(
-    //     documentNode: gql(getTotalLessonsNumber),
-    //   ),
-    //   builder: (QueryResult result,
-    //       {VoidCallback refetch, FetchMore fetchMore}) {
-    //     if (result.hasException) {
-    //       return Text(
-    //         result.exception.toString(),
-    //       );
-    //     }
-    //
-    //     if (result.loading) {
-    //       return Text('Loading');
-    //     }
-    //
-    //     totalLessonsOnServer = result.data['index']['total'];
-    //     // totalLessonsOnServer++;
-    //     build(context);
-    //     print('Total Lessons in Query: $totalLessonsOnServer');
-    //     return Container(
-    //       color: totalLessonsOnServer == 559 ? Colors.red : Colors.blue,
-    //       child: Text('Total Number of lessons fetched'),
-    //     );
-    //   },
-    // );
-    // print(totalLessonsOnServer);
-    // if (totalLessonsOnServer == null) {
-    //   totalLessonsOnServer = 558;
-    // }
   }
 
   @override
   Widget build(BuildContext context) {
     totalLessons = allLessonsBox.length;
-    print('TotalLessonsOnServer in build: $totalLessonsOnServer');
-    print('Total lessons in DB $totalLessons');
+    // totalLessons = 557; // For testing whether it fetches only the new lessons or not
+    // totalLessons = 800; // For testing when the local db has more transcripts than server
+    print('Total lessons in local DB $totalLessons');
 
     return Scaffold(
       appBar: AppBar(
@@ -89,12 +59,12 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Query(
                 options: QueryOptions(
-                  documentNode: gql(getTotalLessonsNumber),
+                  documentNode: gql(totalNumberQuery),
                 ),
                 builder: (QueryResult result,
                     {VoidCallback refetch, FetchMore fetchMore}) {
                   if (result.hasException) {
-                    totalLessonsOnServer = 558;
+                    totalLessonsOnServer = totalLessons;
                   }
 
                   if (result.loading) {
@@ -103,22 +73,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   if (!(result.hasException)) {
                     totalLessonsOnServer = result.data['index']['total'];
-                    print('Total Lessons in Query: $totalLessonsOnServer');
+                    print('Total Lessons on server: $totalLessonsOnServer');
                   }
-                  // return Container(
-                  //   color: totalLessonsOnServer == 559 ? Colors.red : Colors.blue,
-                  //   child: Text('Total Number of lessons fetched'),
-                  // );
                   return Expanded(
                     child: Container(
-                      child: totalLessons <
-                              totalLessonsOnServer //Hard-coded for now. Fetch this number from the GQL server later
+                      child: totalLessons < totalLessonsOnServer
                           ? Container(
                               height: 20,
-                              // width: MediaQuery.of(context).size.width * 0.9,
                               child: Query(
                                 options: QueryOptions(
-                                  documentNode: gql(fetchAllQuery),
+                                  documentNode: gql(fetchLessonsQuery),
+                                  variables: {'skip': totalLessons},
                                 ),
                                 builder: (QueryResult result,
                                     {VoidCallback refetch,
@@ -144,7 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   if (result.loading) {
                                     return LoadingWidget();
                                   }
-
                                   List lessons =
                                       result.data['index']['transcripts'];
 
@@ -152,159 +116,84 @@ class _HomeScreenState extends State<HomeScreen> {
                                   for (lesson in lessons) {
                                     allLessonsBox.add(jsonEncode(lesson));
                                   }
-
-                                  // var startButton = Center(
-                                  //   child: Container(
-                                  //     height: 40,
-                                  //     width: MediaQuery.of(context).size.width *
-                                  //         0.4,
-                                  //     child: RaisedButton(
-                                  //         child: Text('Let\'s go'),
-                                  //         onPressed: () {
-                                  //           setState(() {
-                                  //             totalLessons =
-                                  //                 allLessonsBox.length;
-                                  //           });
-                                  //         }),
-                                  //   ),
-                                  // );
-
-                                  // return startButton;
-                                  return Column(
-                                    children: [
-                                      Expanded(
-                                        child: SizedBox(
-                                          child: ListView.builder(
-                                            itemCount: allLessonsBox.length,
-                                            itemBuilder: (context, index) {
-                                              return ListOfLessons(
-                                                index: index,
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
+                                  return LessonsListView(
+                                      allLessonsBox: allLessonsBox);
                                 },
                               ),
                             )
-                          : Column(
-                              children: [
-                                Expanded(
-                                  child: SizedBox(
-                                    child: ListView.builder(
-                                      itemCount: allLessonsBox.length,
-                                      itemBuilder: (context, index) {
-                                        return ListOfLessons(
-                                          index: index,
-                                        );
-                                      },
+                          : totalLessons == totalLessonsOnServer
+                              ? LessonsListView(allLessonsBox: allLessonsBox)
+                              : Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'ERROR\nDatabase has been tampered\nPlease Re-Initialise the Database and Restart the App',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).accentColor,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 16,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        RaisedButton(
+                                          onPressed: () {
+                                            print('QUIT BUTTON PRESSED');
+                                            allLessonsBox.deleteFromDisk();
+                                            likedLessonsBox.deleteFromDisk();
+                                            SystemNavigator.pop();
+                                          },
+                                          child: Text(
+                                              'Re-Initialise the Database'),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
                     ),
                   );
                 },
               ),
-              // Expanded(
-              //   child: Container(
-              //     child: totalLessons <
-              //             totalLessonsOnServer //Hard-coded for now. Fetch this number from the GQL server later
-              //         ? Container(
-              //             height: 20,
-              //             width: MediaQuery.of(context).size.width * 0.9,
-              //             child: Query(
-              //               options: QueryOptions(
-              //                 documentNode: gql(fetchAllQuery),
-              //               ),
-              //               builder: (QueryResult result,
-              //                   {VoidCallback refetch, FetchMore fetchMore}) {
-              //                 if (result.hasException) {
-              //                   return Text(
-              //                     result.exception.toString(),
-              //                   );
-              //                 }
-              //
-              //                 if (result.loading) {
-              //                   return Center(
-              //                     child: Container(
-              //                       child: Column(
-              //                         mainAxisAlignment:
-              //                             MainAxisAlignment.center,
-              //                         children: [
-              //                           CircularProgressIndicator(
-              //                             strokeWidth: 2.0,
-              //                           ),
-              //                           SizedBox(
-              //                             height: 10,
-              //                           ),
-              //                           Text(
-              //                             'Downloading Transcripts...',
-              //                             style: TextStyle(
-              //                               color:
-              //                                   Theme.of(context).accentColor,
-              //                               fontWeight: FontWeight.w400,
-              //                               fontSize: 16,
-              //                             ),
-              //                           ),
-              //                         ],
-              //                       ),
-              //                     ),
-              //                   );
-              //                 }
-              //
-              //                 List lessons =
-              //                     result.data['index']['transcripts'];
-              //
-              //                 var lesson;
-              //                 for (lesson in lessons) {
-              //                   allLessonsBox.add(jsonEncode(lesson));
-              //                 }
-              //
-              //                 var startButton = Center(
-              //                   child: Container(
-              //                     height: 40,
-              //                     width:
-              //                         MediaQuery.of(context).size.width * 0.4,
-              //                     child: RaisedButton(
-              //                         child: Text('Let\'s go'),
-              //                         onPressed: () {
-              //                           setState(() {
-              //                             totalLessons = allLessonsBox.length;
-              //                           });
-              //                         }),
-              //                   ),
-              //                 );
-              //
-              //                 return startButton;
-              //               },
-              //             ),
-              //           )
-              //         : Column(
-              //             children: [
-              //               Expanded(
-              //                 child: SizedBox(
-              //                   child: ListView.builder(
-              //                     itemCount: allLessonsBox.length,
-              //                     itemBuilder: (context, index) {
-              //                       return ListOfLessons(
-              //                         index: index,
-              //                       );
-              //                     },
-              //                   ),
-              //                 ),
-              //               ),
-              //             ],
-              //           ),
-              //   ),
-              // ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class LessonsListView extends StatelessWidget {
+  const LessonsListView({
+    Key key,
+    @required this.allLessonsBox,
+  }) : super(key: key);
+
+  final Box allLessonsBox;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: SizedBox(
+            child: ListView.builder(
+              itemCount: allLessonsBox.length,
+              itemBuilder: (context, index) {
+                return ListOfLessons(
+                  index: allLessonsBox.length - 1 - index,
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

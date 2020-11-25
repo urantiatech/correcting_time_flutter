@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:correcting_time/screens/lesson_screen.dart';
+import 'package:correcting_time/screens/lesson_details.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'constants.dart';
+import '../constants.dart';
 
 class ListOfLessons extends StatefulWidget {
   final index;
@@ -53,10 +53,10 @@ class _ListOfLessonsState extends State<ListOfLessons> {
       fontSize: 16,
     );
 
-    final kTextStyle22 = TextStyle(
+    final kTextStyle20 = TextStyle(
       color: Theme.of(context).accentColor,
       fontWeight: FontWeight.w600,
-      fontSize: 22,
+      fontSize: 20,
     );
     return Padding(
       padding: EdgeInsets.all(paddingHorizontal),
@@ -71,7 +71,6 @@ class _ListOfLessonsState extends State<ListOfLessons> {
             context,
             MaterialPageRoute(
               builder: (context) => LessonScreen(
-                // slug: lesson['header']['slug'],
                 index: widget.index,
                 lessonTitle: lesson['title'],
               ),
@@ -95,6 +94,7 @@ class _ListOfLessonsState extends State<ListOfLessons> {
                   ),
                   child: Image.network(
                     lesson['image'] == null ? 'Null URL' : lesson['image'],
+                    fit: BoxFit.fill,
                   ),
                 ),
                 SizedBox(
@@ -107,7 +107,8 @@ class _ListOfLessonsState extends State<ListOfLessons> {
                       width: fullWidth * 0.60,
                       child: Text(
                         lesson['title'],
-                        style: kTextStyle22,
+                        overflow: TextOverflow.ellipsis,
+                        style: kTextStyle20,
                       ),
                     ),
                     SizedBox(
@@ -119,6 +120,7 @@ class _ListOfLessonsState extends State<ListOfLessons> {
                         lesson['teachers'].length == 0
                             ? 'No data found'
                             : lesson['teachers'][0],
+                        overflow: TextOverflow.ellipsis,
                         style: kTextStyle16,
                       ),
                     ),
@@ -127,10 +129,6 @@ class _ListOfLessonsState extends State<ListOfLessons> {
                     ),
                     Container(
                       width: fullWidth * 0.60,
-                      // child: Text(
-                      //   lesson['date'],
-                      //   style: kTextStyle14,
-                      // ),
                       child: Text(
                         DateFormat('EEEE, d MMMM y').format(
                           DateTime.parse((lesson['date']).toString()),

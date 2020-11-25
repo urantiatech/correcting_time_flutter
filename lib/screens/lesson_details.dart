@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'package:correcting_time/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
 
 class LessonScreen extends StatefulWidget {
   final String lessonTitle;
   final int index;
 
-  // LessonScreen({@required this.slug, @required this.lessonTitle});
   LessonScreen({@required this.index, @required this.lessonTitle});
 
   @override
@@ -52,7 +52,6 @@ class _LessonScreenState extends State<LessonScreen> {
                           child: Text(
                             "Teachers: " + lesson['teachers'][0],
                             style: TextStyle(
-                              // color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.w400,
                               fontSize: 18,
                             ),
@@ -64,9 +63,11 @@ class _LessonScreenState extends State<LessonScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 10),
                           child: Text(
-                            "Date: " + lesson['date'],
+                            'Date: ' +
+                                DateFormat('EEEE, d MMMM y').format(
+                                  DateTime.parse((lesson['date']).toString()),
+                                ),
                             style: TextStyle(
-                              // color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.w400,
                               fontSize: 18,
                             ),

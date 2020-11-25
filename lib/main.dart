@@ -12,7 +12,6 @@ import 'package:path_provider/path_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Directory document = await getApplicationDocumentsDirectory();
-  // print(document.path);
   Hive.init(document.path);
   await Hive.openBox("likedLessons");
   await Hive.openBox("allLessons");
