@@ -31,9 +31,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     totalLessons = allLessonsBox.length;
-    // totalLessons = 557; // For testing whether it fetches only the new lessons or not
-    // totalLessons = 800; // For testing when the local db has more transcripts than server
-    print('Total lessons in local DB $totalLessons');
+    // // For testing whether it fetches only the new lessons or not
+    // totalLessons = 557;
+    // // For testing when the local db has more transcripts than server
+    // totalLessons = 800;
+    debugPrint('Total lessons in local DB $totalLessons');
 
     return Scaffold(
       appBar: AppBar(
@@ -63,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 builder: (QueryResult result,
                     {VoidCallback refetch, FetchMore fetchMore}) {
+                  var refresh = refetch;
                   if (result.hasException) {
                     totalLessonsOnServer = totalLessons;
                   }
@@ -73,7 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   if (!(result.hasException)) {
                     totalLessonsOnServer = result.data['index']['total'];
-                    print('Total Lessons on server: $totalLessonsOnServer');
+                    debugPrint(
+                        'Total Lessons on server: $totalLessonsOnServer');
                   }
                   return Expanded(
                     child: Container(
@@ -113,16 +117,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                       result.data['index']['transcripts'];
 
                                   var lesson;
+                                  print('Wrong query refetch called');
                                   for (lesson in lessons) {
                                     allLessonsBox.add(jsonEncode(lesson));
                                   }
+                                  totalLessons = allLessonsBox.length;
                                   return LessonsListView(
-                                      allLessonsBox: allLessonsBox);
+                                    allLessonsBox: allLessonsBox,
+                                    refetchQuery: refresh,
+                                  );
                                 },
                               ),
                             )
                           : totalLessons == totalLessonsOnServer
-                              ? LessonsListView(allLessonsBox: allLessonsBox)
+                              ? LessonsListView(
+                                  allLessonsBox: allLessonsBox,
+                                  refetchQuery: refresh,
+                                )
                               : Center(
                                   child: Padding(
                                     padding: EdgeInsets.all(8.0),
@@ -171,11 +182,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class LessonsListView extends StatelessWidget {
   const LessonsListView({
-    Key key,
     @required this.allLessonsBox,
-  }) : super(key: key);
+    @required this.refetchQuery,
+  });
 
   final Box allLessonsBox;
+  final refetchQuery;
 
   @override
   Widget build(BuildContext context) {
@@ -183,13 +195,16 @@ class LessonsListView extends StatelessWidget {
       children: [
         Expanded(
           child: SizedBox(
-            child: ListView.builder(
-              itemCount: allLessonsBox.length,
-              itemBuilder: (context, index) {
-                return ListOfLessons(
-                  index: allLessonsBox.length - 1 - index,
-                );
-              },
+            child: RefreshIndicator(
+              onRefresh: refetchQuery,
+              child: ListView.builder(
+                itemCount: allLessonsBox.length,
+                itemBuilder: (context, index) {
+                  return ListOfLessons(
+                    index: allLessonsBox.length - 1 - index,
+                  );
+                },
+              ),
             ),
           ),
         ),
