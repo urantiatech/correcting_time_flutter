@@ -119,7 +119,7 @@ class _ListOfLessonsState extends State<ListOfLessons> {
                       child: Text(
                         lesson['teachers'].length == 0
                             ? 'No data found'
-                            : lesson['teachers'][0],
+                            : lesson['teachers'].join(', '),
                         overflow: TextOverflow.ellipsis,
                         style: kTextStyle16,
                       ),

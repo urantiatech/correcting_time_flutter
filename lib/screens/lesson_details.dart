@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
+import 'package:share/share.dart';
+import 'package:html/parser.dart';
 
 class LessonScreen extends StatefulWidget {
   final String lessonTitle;
@@ -27,6 +29,8 @@ class _LessonScreenState extends State<LessonScreen> {
   @override
   Widget build(BuildContext context) {
     Map lesson = jsonDecode(allLessonsBox.getAt(widget.index));
+    var document = parse(lesson['body']);
+    String lessonBody = parse(document.body.text).documentElement.text;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -50,7 +54,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 10),
                           child: Text(
-                            "Teachers: " + lesson['teachers'][0],
+                            "Teacher: " + lesson['teachers'].join(', '),
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 18,
@@ -83,6 +87,9 @@ class _LessonScreenState extends State<LessonScreen> {
                           lesson['image'],
                           width: MediaQuery.of(context).size.width,
                         ),
+                        SizedBox(
+                          height: 16,
+                        ),
                         Padding(
                           padding: const EdgeInsets.only(left: 10),
                           child: Text(
@@ -104,6 +111,18 @@ class _LessonScreenState extends State<LessonScreen> {
             )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Share.share(
+            'Teacher: ${lesson['teachers'][0]} \nDate: ${DateFormat('EEEE, d MMMM y').format(
+              DateTime.parse((lesson['date']).toString()),
+            )}\nLocation: ${lesson['location']}\n\n$lessonBody',
+            subject: lesson['title'],
+          );
+        },
+        child: Icon(Icons.share),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
     );
   }
