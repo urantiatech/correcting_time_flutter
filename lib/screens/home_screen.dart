@@ -117,7 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       result.data['index']['transcripts'];
 
                                   var lesson;
-                                  print('Wrong query refetch called');
                                   for (lesson in lessons) {
                                     allLessonsBox.add(jsonEncode(lesson));
                                   }
@@ -180,6 +179,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// List allTeachers = new List();
+// List distinctTeachers = new List();
+
 class LessonsListView extends StatelessWidget {
   const LessonsListView({
     @required this.allLessonsBox,
@@ -200,6 +202,11 @@ class LessonsListView extends StatelessWidget {
               child: ListView.builder(
                 itemCount: allLessonsBox.length,
                 itemBuilder: (context, index) {
+                  // allTeachers.add(
+                  //     jsonDecode(allLessonsBox.getAt(index))['teachers']
+                  //         .join(', '));
+                  // distinctTeachers = allTeachers.toSet().toList();
+                  // debugPrint(distinctTeachers.toString());
                   return ListOfLessons(
                     index: allLessonsBox.length - 1 - index,
                   );
